@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스터디 생성 - 스터디 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <a th:href="@{/studies/create}">스터디 생성</a>
+                <a th:href="@{/mypage}">마이페이지</a>
+                <a th:href="@{/logout}">로그아웃</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>스터디 생성</h2>
+            
+            <form th:action="@{/studies/create}" method="post" th:object="${study}">
+                <div class="form-group">
+                    <label for="title">스터디명 *</label>
+                    <input type="text" id="title" name="title" class="form-control" th:field="*{title}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">설명 *</label>
+                    <textarea id="description" name="description" class="form-control" rows="5" th:field="*{description}" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxParticipants">최대 인원 *</label>
+                    <input type="number" id="maxParticipants" name="maxParticipants" class="form-control" min="1" max="50" th:field="*{maxParticipants}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deadline">신청 마감일 *</label>
+                    <input type="date" id="deadline" name="deadline" class="form-control" th:field="*{deadline}" required>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">생성하기</button>
+                    <a th:href="@{/studies/list}" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3>좋은 스터디를 만드는 팁</h3>
+            <ul>
+                <li><strong>명확한 제목:</strong> 스터디명을 구체적으로 작성하세요</li>
+                <li><strong>상세 설명:</strong> 주제, 모임 빈도, 기대사항 등을 포함하세요</li>
+                <li><strong>적정 인원:</strong> 관리 가능한 인원을 설정하세요</li>
+                <li><strong>적절한 마감일:</strong> 충분한 모집 기간을 주세요</li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

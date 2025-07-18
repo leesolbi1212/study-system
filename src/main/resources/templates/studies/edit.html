@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스터디 수정 - 스터디 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <a th:href="@{/studies/create}">스터디 생성</a>
+                <a th:href="@{/mypage}">마이페이지</a>
+                <a th:href="@{/logout}">로그아웃</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>스터디 수정</h2>
+            
+            <form th:action="@{/studies/edit/{id}(id=${study.studyId})}" method="post" th:object="${study}">
+                <div class="form-group">
+                    <label for="title">스터디명 *</label>
+                    <input type="text" id="title" name="title" class="form-control" th:field="*{title}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">설명 *</label>
+                    <textarea id="description" name="description" class="form-control" rows="5" th:field="*{description}" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxParticipants">최대 인원 *</label>
+                    <input type="number" id="maxParticipants" name="maxParticipants" class="form-control" min="1" max="50" th:field="*{maxParticipants}" required>
+                    <small class="text-muted">현재 인원: <span th:text="${study.currentParticipants}">0</span></small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deadline">신청 마감일 *</label>
+                    <input type="date" id="deadline" name="deadline" class="form-control" th:field="*{deadline}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">상태 *</label>
+                    <select id="status" name="status" class="form-control" th:field="*{status}">
+                        <option value="RECRUITING">모집중</option>
+                        <option value="CLOSED">마감</option>
+                        <option value="COMPLETED">완료</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">수정하기</button>
+                    <a th:href="@{/studies/detail/{id}(id=${study.studyId})}" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3>스터디 통계</h3>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${study.currentParticipants}">0</div>
+                    <div class="stat-label">현재 인원</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${study.maxParticipants}">5</div>
+                    <div class="stat-label">최대 인원</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

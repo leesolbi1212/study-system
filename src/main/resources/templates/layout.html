@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title != null ? title + ' - 스터디 관리' : '스터디 관리'}">스터디 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/studies/create}">스터디 생성</a>
+                    <a th:href="@{/mypage}">마이페이지</a>
+                    <a th:href="@{/logout}">로그아웃</a>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">로그인</a>
+                    <a th:href="@{/register}">회원가입</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
+        <div layout:fragment="content">
+            <!-- Page content will be inserted here -->
+        </div>
+    </main>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

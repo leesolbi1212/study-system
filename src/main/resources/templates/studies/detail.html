@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${study.title} + ' - 스터디 관리'">스터디 상세</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/studies/create}">스터디 생성</a>
+                    <a th:href="@{/mypage}">마이페이지</a>
+                    <a th:href="@{/logout}">로그아웃</a>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">로그인</a>
+                    <a th:href="@{/register}">회원가입</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
+        <div class="card">
+            <a th:href="@{/studies/list}" class="btn btn-secondary btn-sm" style="margin-bottom: 1rem;">&laquo; 목록으로</a>
+            
+            <h1 th:text="${study.title}">스터디명</h1>
+            
+            <div class="study-meta" style="margin-bottom: 2rem;">
+                <div><strong>생성자:</strong> <span th:text="${study.creatorName}">생성자명</span></div>
+                <div><strong>참여자:</strong> <span th:text="${study.currentParticipants} + '/' + ${study.maxParticipants}">0/5</span></div>
+                <div><strong>마감일:</strong> <span th:text="${study.deadline}">2024-01-31</span></div>
+                <div><strong>상태:</strong> <span th:text="${study.status}">모집중</span></div>
+                <div><strong>생성일:</strong> <span th:text="${#temporals.format(study.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</span></div>
+            </div>
+            
+            <div class="study-description" style="margin-bottom: 2rem;">
+                <h3>설명</h3>
+                <p th:text="${study.description}">스터디 설명</p>
+            </div>
+            
+            <div class="study-actions">
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${study.alreadyApplied}" class="alert alert-success">
+                        이미 신청한 스터디입니다.
+                    </div>
+                    
+                    <div th:if="${!study.alreadyApplied and study.canApply}">
+                        <form th:action="@{/studies/apply/{id}(id=${study.studyId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('이 스터디에 신청하시겠습니까?')">
+                                스터디 신청
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div th:if="${!study.alreadyApplied and !study.canApply}">
+                        <div th:if="${study.currentParticipants >= study.maxParticipants}" class="alert alert-danger">
+                            정원이 마감되었습니다.
+                        </div>
+                        <div th:if="${study.currentParticipants < study.maxParticipants and study.status != 'RECRUITING'}" class="alert alert-danger">
+                            모집이 종료되었습니다.
+                        </div>
+                    </div>
+                </div>
+                
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-primary">신청하려면 로그인</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>스터디 정보</h3>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${study.maxParticipants}">5</div>
+                    <div class="stat-label">최대 인원</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${study.currentParticipants}">3</div>
+                    <div class="stat-label">현재 인원</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${study.maxParticipants - study.currentParticipants}">2</div>
+                    <div class="stat-label">남은 자리</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

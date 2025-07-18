@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/studies/create}">스터디 생성</a>
+                    <a th:href="@{/mypage}">마이페이지</a>
+                    <a th:href="@{/logout}">로그아웃</a>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">로그인</a>
+                    <a th:href="@{/register}">회원가입</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
+        <div class="card">
+            <h1>스터디 관리 시스템에 오신 것을 환영합니다</h1>
+            <p>함께 공부할 스터디 그룹에 참여하거나 직접 만들어보세요.</p>
+            
+            <div sec:authorize="!isAuthenticated()">
+                <h3>시작하기</h3>
+                <p>계정을 생성하고 스터디 그룹에 참여하거나 만들어보세요.</p>
+                <div style="margin-top: 2rem;">
+                    <a th:href="@{/register}" class="btn btn-primary">회원가입</a>
+                    <a th:href="@{/login}" class="btn btn-secondary">로그인</a>
+                </div>
+            </div>
+            
+            <div sec:authorize="isAuthenticated()">
+                <h3>빠른 메뉴</h3>
+                <div style="margin-top: 2rem;">
+                    <a th:href="@{/studies/list}" class="btn btn-primary">스터디 둘러보기</a>
+                    <a th:href="@{/studies/create}" class="btn btn-secondary">스터디 생성</a>
+                    <a th:href="@{/mypage}" class="btn btn-secondary">마이페이지</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>주요 기능</h2>
+            <ul>
+                <li><strong>스터디 그룹 생성:</strong> 원하는 주제와 마감일로 스터디 그룹을 직접 만들 수 있습니다</li>
+                <li><strong>스터디 참여:</strong> 관심 있는 스터디 그룹을 찾아 참여할 수 있습니다</li>
+                <li><strong>검색 및 필터:</strong> 제목이나 생성자로 스터디를 쉽게 찾을 수 있습니다</li>
+                <li><strong>신청 관리:</strong> 내 신청 내역과 스터디 그룹을 관리할 수 있습니다</li>
+                <li><strong>보안 접속:</strong> Spring Security 인증으로 안전하게 보호됩니다</li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스터디 목록 - 스터디 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">스터디 관리</a>
+            <nav class="nav-links">
+                <a th:href="@{/}">홈</a>
+                <a th:href="@{/studies/list}">스터디 목록</a>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/studies/create}">스터디 생성</a>
+                    <a th:href="@{/mypage}">마이페이지</a>
+                    <a th:href="@{/logout}">로그아웃</a>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">로그인</a>
+                    <a th:href="@{/register}">회원가입</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>스터디 그룹</h2>
+            
+            <form th:action="@{/studies/list}" method="get" class="search-form">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="제목 또는 생성자로 검색..." class="form-control">
+                <button type="submit" class="btn btn-primary">검색</button>
+                <a th:href="@{/studies/list}" class="btn btn-secondary">초기화</a>
+            </form>
+            
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/studies/create}" class="btn btn-primary">새 스터디 만들기</a>
+            </div>
+        </div>
+        
+        <div th:if="${#lists.isEmpty(studies)}">
+            <div class="card">
+                <p>스터디가 없습니다.</p>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/studies/create}" class="btn btn-primary">첫 스터디 만들기!</a>
+                </div>
+            </div>
+        </div>
+        
+        <div th:each="study : ${studies}" class="study-item">
+            <div class="study-title" th:text="${study.title}">스터디명</div>
+            <div class="study-meta">
+                생성자: <span th:text="${study.creatorName}">생성자</span>
+                | <span th:text="${study.currentParticipants} + '/' + ${study.maxParticipants} + '명'">0/5명</span>
+                | 마감일: <span th:text="${study.deadline}">2024-01-31</span>
+                | 상태: <span th:text="${study.status}">모집중</span>
+            </div>
+            <div class="study-description" th:text="${study.description}">설명</div>
+            <div class="study-actions">
+                <a th:href="@{/studies/detail/{id}(id=${study.studyId})}" class="btn btn-secondary btn-sm">상세보기</a>
+                <div th:if="${study.currentParticipants < study.maxParticipants and study.status == 'RECRUITING'}">
+                    <form th:action="@{/studies/apply/{id}(id=${study.studyId})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary btn-sm"
+                            sec:authorize="isAuthenticated()"
+                            onclick="return confirm('이 스터디에 신청하시겠습니까?')">신청</button>
+                    </form>
+                    <a th:href="@{/login}" class="btn btn-primary btn-sm" sec:authorize="!isAuthenticated()">신청하려면 로그인</a>
+                </div>
+                <div th:if="${study.currentParticipants >= study.maxParticipants}">
+                    <span class="btn btn-secondary btn-sm" style="opacity:0.6;">마감</span>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${totalPages > 1}" class="pagination">
+            <a th:if="${currentPage > 0}" 
+               th:href="@{/studies/list(page=${currentPage - 1}, size=${size}, keyword=${keyword})}">&laquo; 이전</a>
+            
+            <span th:each="page : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:if="${page != currentPage}" 
+                   th:href="@{/studies/list(page=${page}, size=${size}, keyword=${keyword})}"
+                   th:text="${page + 1}">1</a>
+                <span th:if="${page == currentPage}" class="active" th:text="${page + 1}">1</span>
+            </span>
+            
+            <a th:if="${currentPage < totalPages - 1}" 
+               th:href="@{/studies/list(page=${currentPage + 1}, size=${size}, keyword=${keyword})}">다음 &raquo;</a>
+        </div>
+    </main>
+</body>
+</html>

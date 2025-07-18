@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.management.mapper.StudyMapper">
+    
+    <resultMap id="StudyResultMap" type="Study">
+        <id property="studyId" column="study_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="maxParticipants" column="max_participants"/>
+        <result property="currentParticipants" column="current_participants"/>
+        <result property="deadline" column="deadline"/>
+        <result property="status" column="status"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="creatorName" column="creator_name"/>
+    </resultMap>
+    
+    <select id="findAllStudies" resultMap="StudyResultMap">
+        SELECT s.*, u.full_name as creator_name
+        FROM studies s
+        LEFT JOIN users u ON s.creator_id = u.user_id
+        ORDER BY s.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="searchStudies" resultMap="StudyResultMap">
+        SELECT s.*, u.full_name as creator_name
+        FROM studies s
+        LEFT JOIN users u ON s.creator_id = u.user_id
+        WHERE s.title LIKE CONCAT('%', #{keyword}, '%') 
+           OR u.full_name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY s.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="findById" resultMap="StudyResultMap">
+        SELECT s.*, u.full_name as creator_name
+        FROM studies s
+        LEFT JOIN users u ON s.creator_id = u.user_id
+        WHERE s.study_id = #{studyId}
+    </select>
+    
+    <select id="findByCreatorId" resultMap="StudyResultMap">
+        SELECT s.*, u.full_name as creator_name
+        FROM studies s
+        LEFT JOIN users u ON s.creator_id = u.user_id
+        WHERE s.creator_id = #{creatorId}
+        ORDER BY s.created_at DESC
+    </select>
+    
+    <select id="countAllStudies" resultType="int">
+        SELECT COUNT(*)
+        FROM studies
+    </select>
+    
+    <select id="countSearchStudies" resultType="int">
+        SELECT COUNT(*)
+        FROM studies s
+        LEFT JOIN users u ON s.creator_id = u.user_id
+        WHERE s.title LIKE CONCAT('%', #{keyword}, '%') 
+           OR u.full_name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+    
+    <insert id="insertStudy" parameterType="Study" useGeneratedKeys="true" keyProperty="studyId">
+        INSERT INTO studies (title, description, max_participants, deadline, creator_id)
+        VALUES (#{title}, #{description}, #{maxParticipants}, #{deadline}, #{creatorId})
+    </insert>
+    
+    <update id="updateStudy" parameterType="Study">
+        UPDATE studies
+        SET title = #{title}, description = #{description}, 
+            max_participants = #{maxParticipants}, deadline = #{deadline}, 
+            status = #{status}
+        WHERE study_id = #{studyId}
+    </update>
+    
+    <update id="updateCurrentParticipants">
+        UPDATE studies
+        SET current_participants = current_participants + #{increment}
+        WHERE study_id = #{studyId}
+    </update>
+    
+    <delete id="deleteStudy">
+        DELETE FROM studies WHERE study_id = #{studyId}
+    </delete>
+    
+</mapper>

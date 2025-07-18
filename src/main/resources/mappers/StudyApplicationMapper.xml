@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.management.mapper.StudyApplicationMapper">
+    
+    <resultMap id="StudyApplicationResultMap" type="StudyApplication">
+        <id property="applicationId" column="application_id"/>
+        <result property="studyId" column="study_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="status" column="status"/>
+        <result property="appliedAt" column="applied_at"/>
+        <result property="studyTitle" column="study_title"/>
+        <result property="userName" column="user_name"/>
+    </resultMap>
+    
+    <insert id="insertApplication" parameterType="StudyApplication" useGeneratedKeys="true" keyProperty="applicationId">
+        INSERT INTO study_applications (study_id, user_id, status)
+        VALUES (#{studyId}, #{userId}, #{status})
+    </insert>
+    
+    <select id="findByStudyIdAndUserId" resultMap="StudyApplicationResultMap">
+        SELECT *
+        FROM study_applications
+        WHERE study_id = #{studyId} AND user_id = #{userId}
+    </select>
+    
+    <select id="findByUserId" resultMap="StudyApplicationResultMap">
+        SELECT sa.*, s.title as study_title
+        FROM study_applications sa
+        LEFT JOIN studies s ON sa.study_id = s.study_id
+        WHERE sa.user_id = #{userId}
+        ORDER BY sa.applied_at DESC
+    </select>
+    
+    <select id="findByStudyId" resultMap="StudyApplicationResultMap">
+        SELECT sa.*, u.full_name as user_name
+        FROM study_applications sa
+        LEFT JOIN users u ON sa.user_id = u.user_id
+        WHERE sa.study_id = #{studyId}
+        ORDER BY sa.applied_at DESC
+    </select>
+    
+    <select id="countByStudyId" resultType="int">
+        SELECT COUNT(*)
+        FROM study_applications
+        WHERE study_id = #{studyId} AND status = 'APPLIED'
+    </select>
+    
+    <delete id="deleteApplication">
+        DELETE FROM study_applications WHERE application_id = #{applicationId}
+    </delete>
+    
+</mapper>
